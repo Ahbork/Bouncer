@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour {
     private Vector2 position;
     private float arrowLength = 2f;
     private const float touchDistThreshold = 50;
-
+    private bool aimReady = false;
 
     void Start () {
         rb = GetComponent<Rigidbody2D>();
@@ -40,6 +40,7 @@ public class PlayerMovement : MonoBehaviour {
     {
         if (Input.GetMouseButtonDown(0))
         {
+            aimReady = false;
             //touchDown = position;
             touchDown = Input.mousePosition;
             Time.timeScale = timeScaleSlow;
@@ -54,7 +55,8 @@ public class PlayerMovement : MonoBehaviour {
         if (Input.GetMouseButtonUp(0))
         {
             Time.timeScale = timeScaleDef;
-            Aim();
+            if(aimReady)
+                Aim();
         }
     }
 
@@ -65,7 +67,13 @@ public class PlayerMovement : MonoBehaviour {
         if (Input.GetMouseButton(0))
         {
             Vector2 mousePos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            print(Vector3.Distance(mousePos, touchDown));
+            if (Vector3.Distance(mousePos, touchDown) > touchDistThreshold)
+            {
+                aimReady = true;
+            }
+            else
+                aimReady = false;
+
             arrowEnd = (mousePos - touchDown).normalized;
             Debug.DrawRay(position, arrowEnd * arrowLength, Color.green);
         }
